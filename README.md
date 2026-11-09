@@ -1,97 +1,82 @@
-# Voxtype Aura
+# Voxtype Aura — niri + noctalia fork
 
-A compact, theme-aware [Voxtype](https://github.com/peteonrails/voxtype)
-dictation overlay for [Omarchy](https://omarchy.org/).
+A compact recording overlay for [voxtype](https://voxtype.io): one pill, a
+waveform, and a symmetric countdown bar. No icons, no labels.
 
-Aura appears at the top-center of the focused monitor while Voxtype is active:
+This is a fork of [adamcbrewer/voxtype-aura](https://github.com/adamcbrewer/voxtype-aura)
+adapted for **niri + noctalia**. It drops the Omarchy plugin system, the
+`qs.Commons` helpers, and the Hyprland focus API, so it runs as a plain
+Quickshell config.
 
-- **LISTENING** with live microphone-level bars while recording.
-- A 2px countdown bar along the bottom shows recording time remaining.
-- **TRANSCRIBING** with a sweeping animation while processing speech.
-- **TRANSCRIBED** with a brief check mark after successful transcription.
-- Hidden when Voxtype is idle.
-
-It follows Omarchy's active colors, typography, spacing, and corner radius. The
-layer-shell surface never takes keyboard focus, accepts no pointer input, and
-does not reserve screen space.
-
-## Examples
-
-### Listening
-
-![Voxtype Aura listening while speech is recorded](preview.png)
-
-### Transcribing
-
-![Voxtype Aura transcribing recorded speech](docs/screenshots/transcribing.png)
-
-### Transcribed
-
-![Voxtype Aura showing a successful transcription](docs/screenshots/transcribed.png)
+- recording: red `#BB3535`
+- transcribing: yellow `#E6C27A`
+- done: green `#4DD973`
 
 ## Requirements
 
-- Omarchy with shell-plugin support.
-- Voxtype running as `voxtype.service`.
-- `setpriv` (util-linux) available on `PATH`.
-- `voxtype-audio-bridge` available on `PATH`.
+- niri (uses `niri msg --json focused-output`)
+- `quickshell` (provides `qs`) — tested with 0.2.1
+- `voxtype` with `voxtype-audio-bridge` — tested with 1.1.1
+- `setpriv` (util-linux)
+- systemd user session
 
 ## Install
 
-Disable Voxtype's built-in OSD in `~/.config/voxtype/config.toml`:
-
-```toml
-[osd]
-enabled = false
+```sh
+git clone -b niri-noctalia https://github.com/Luke1453/voxtype-aura.git
+cd voxtype-aura
+./install.sh
 ```
 
-Restart Voxtype:
+The script writes `~/.config/systemd/user/voxtype-aura.service`, disables
+voxtype's built-in OSD (`[osd] enabled = false`), and starts both services.
+The unit is generated with the current path, so keep the clone where it is or
+re-run `./install.sh` after moving it.
+
+## How it works
+
+```text
+voxtype daemon ──status --follow──> Aura (qs) ──layer-shell──> niri
+               ──audio.sock──> voxtype-audio-bridge ──NDJSON──> Aura
+```
+
+State colors follow `stateColor` in `Service.qml`. The overlay queries
+`niri msg --json focused-output` at startup and whenever voxtype reports a
+state change, then shows on that output. The layer uses an empty input region,
+so clicks pass through.
+
+## Tuning
+
+All visual settings are at the top of `Service.qml`:
+
+| Property | Current |
+|---|---|
+| `recordingColor` | `#BB3535` |
+| `transcribingColor` | `#E6C27A` |
+| `successColor` | `#4DD973` |
+| `background` | `#0A0A12` |
+| `cornerRadius` | `9` |
+| `gapsOut` | `8` |
+
+Geometry is in the `PanelWindow` block: `implicitWidth: 150`,
+`implicitHeight: 50`, and the card is `137x33`. Waveform bar count, width and
+spacing are in the `Repeater`; max bar height is in `barHeight()`.
+
+Apply changes with:
 
 ```sh
-systemctl --user restart voxtype.service
+systemctl --user restart voxtype-aura
 ```
 
-Install and enable Aura:
+## Uninstall
 
 ```sh
-omarchy plugin add https://github.com/adamcbrewer/voxtype-aura.git --enable
+./uninstall.sh
 ```
 
-## Remove
-
-```sh
-omarchy plugin remove io.github.adamcbrewer.voxtype-aura
-```
-
-To restore Voxtype's built-in display, set `[osd] enabled = true` and restart
-`voxtype.service`.
-
-## How It Works
-
-Aura is a keep-loaded Omarchy service plugin. It follows Voxtype's status stream
-through `voxtype status --follow` and reads live microphone levels from
-`voxtype-audio-bridge`. At startup and each new recording, it reads
-`audio.max_duration_secs` using `voxtype config get` to set the countdown duration.
-The bar shrinks from full to empty in the recording color and hides when recording
-ends. If the duration cannot be read, the bar stays hidden.
-A valid transition from `transcribing` to an
-inactive state briefly shows the completion state. Unexpected or unavailable
-status data fails closed by hiding the overlay. If either process exits while
-needed, Aura retries it after one second.
+This removes the unit and re-enables voxtype's built-in OSD.
 
 ## Credits
 
-Voxtype Aura was inspired by Jon Henshaw's
-[Voxtype Prism](https://github.com/jonhenshaw/voxtype-prism), particularly its
-compact, theme-aware recording indicators and Omarchy layer-shell integration.
-See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for license attribution.
-
-## Security
-
-Omarchy plugins run unsandboxed inside the long-lived `omarchy-shell` process.
-Review plugin code before enabling it. Aura runs three fixed local commands,
-accepts no user input, performs no network requests, and reads no credentials.
-
-## License
-
-[MIT](LICENSE)
+Original project by Adam Brewer, MIT licensed. See `LICENSE` and
+`THIRD_PARTY_NOTICES.md`.
