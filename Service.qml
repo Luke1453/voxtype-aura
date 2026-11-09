@@ -78,17 +78,17 @@ Item {
   }
 
   function barHeight(index) {
-    if (state === "success") return 4
+    if (state === "success") return 3.5
 
     if (state === "recording" && audioSamples.length) {
       var sampleIndex = Math.min(audioSamples.length - 1,
-        Math.floor(index * (audioSamples.length - 1) / 9))
-      return 4 + Math.min(1, audioSamples[sampleIndex] * 20) * 18
+        Math.floor(index * (audioSamples.length - 1) / 15))
+      return 3.5 + Math.min(1, audioSamples[sampleIndex] * 20) * 14
     }
 
     var distance = Math.abs(index - (animationFrame % 15))
     distance = Math.min(distance, 15 - distance)
-    return 4 + Math.max(0, 18 - distance * 4.5)
+    return 3.5 + Math.max(0, 14 - distance * 3.5)
   }
 
   Process {
@@ -256,15 +256,15 @@ Item {
 
       Item {
         anchors.fill: parent
-        anchors.leftMargin: 16
-        anchors.rightMargin: 16
+        anchors.leftMargin: parent.radius
+        anchors.rightMargin: parent.radius
 
         Row {
-          anchors.centerIn: parent
-          spacing: 10
+          anchors.fill: parent
+          spacing: Math.max(2, (width - 16 * 4) / 15)
 
           Repeater {
-            model: 10
+            model: 16
 
             Rectangle {
               required property int index
