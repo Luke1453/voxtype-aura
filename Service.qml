@@ -11,7 +11,7 @@ Item {
   // Same values as ~/.config/omarchy/current/theme/colors.toml.
   readonly property color recordingColor: "#BB3535"
   readonly property color transcribingColor: "#E6C27A"
-  readonly property color successColor: "#8BAA82"
+  readonly property color successColor: "#4DD973"
   readonly property color background: "#0A0A12"
   readonly property int cornerRadius: 9
   readonly property int gapsOut: 8
