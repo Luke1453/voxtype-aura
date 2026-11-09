@@ -1,13 +1,26 @@
 import QtQuick
 import QtQuick.Effects
 import Quickshell
-import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
-import qs.Commons
 
 Item {
   id: root
+
+  // Palette for niri + noctalia ("Occult Umbral", dark).
+  // Same values as ~/.config/omarchy/current/theme/colors.toml.
+  readonly property color accent: "#BB3535"
+  readonly property color urgent: "#C25B5B"
+  readonly property color background: "#0A0A12"
+  readonly property color foreground: "#E4DED2"
+  readonly property int cornerRadius: 12
+  readonly property int gapsOut: 12
+  readonly property string fontFamily: "GoogleSansCode Nerd Font"
+  readonly property int fontCaption: 12
+
+  function alpha(color, value) {
+    return Qt.rgba(color.r, color.g, color.b, value)
+  }
 
   property string state: "idle"
   property int animationFrame: 0
@@ -19,13 +32,12 @@ Item {
   readonly property real recordingProgress: maxDurationSecs > 0
     ? Math.max(0, 1 - recordingElapsedSecs / maxDurationSecs) : 0
   readonly property bool active: state === "recording" || state === "transcribing" || state === "success"
-  readonly property color successColor: Qt.hsla(0.33, Math.max(0.35, Color.accent.hslSaturation), Color.accent.hslLightness, 1)
-  readonly property color stateColor: state === "recording" ? Color.urgent
-    : state === "success" ? successColor : Color.accent
+  readonly property color successColor: Qt.hsla(0.33, Math.max(0.35, accent.hslSaturation), accent.hslLightness, 1)
+  readonly property color stateColor: state === "recording" ? urgent
+    : state === "success" ? successColor : accent
   readonly property string label: state === "recording" ? "LISTENING"
     : state === "success" ? "TRANSCRIBED" : "TRANSCRIBING"
-  readonly property string focusedScreenName: Hyprland.focusedMonitor
-    ? String(Hyprland.focusedMonitor.name || "") : ""
+  property string focusedScreenName: ""
   readonly property var activeScreen: {
     for (var i = 0; i < Quickshell.screens.length; i++) {
       if (Quickshell.screens[i].name === focusedScreenName) return Quickshell.screens[i]
@@ -34,6 +46,7 @@ Item {
   }
 
   function update(raw) {
+    if (!niriFocus.running) niriFocus.running = true
     try {
       var data = JSON.parse(String(raw || "{}"))
       var nextState = String(data.alt || data.class || "idle")
@@ -144,6 +157,22 @@ Item {
     onTriggered: statusProcess.running = true
   }
 
+  Process {
+    id: niriFocus
+
+    command: ["niri", "msg", "--json", "focused-output"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        try {
+          root.focusedScreenName = String(JSON.parse(text).name || "")
+        } catch (error) {
+        }
+      }
+    }
+  }
+
+  Component.onCompleted: niriFocus.running = true
+
   Timer {
     interval: 50
     repeat: true
@@ -172,7 +201,7 @@ Item {
     implicitWidth: 320
     implicitHeight: 76
     anchors.top: true
-    margins.top: Style.gapsOut
+    margins.top: root.gapsOut
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     mask: Region {}
@@ -187,7 +216,7 @@ Item {
       width: 292
       height: 50
       anchors.centerIn: parent
-      radius: Math.min(height / 2, Style.cornerRadius)
+      radius: Math.min(height / 2, root.cornerRadius)
       color: root.stateColor
     }
 
@@ -207,8 +236,8 @@ Item {
       width: 292
       height: 50
       anchors.centerIn: parent
-      radius: Math.min(height / 2, Style.cornerRadius)
-      color: Util.alpha(Color.background, 0.94)
+      radius: Math.min(height / 2, root.cornerRadius)
+      color: root.alpha(root.background, 0.94)
       border.width: 1
       border.color: root.stateColor
 
@@ -243,7 +272,7 @@ Item {
           horizontalAlignment: Text.AlignHCenter
           text: root.state === "success" ? "\uf00c" : "\uf130"
           color: root.stateColor
-          font.family: Style.font.family
+          font.family: root.fontFamily
           font.pixelSize: 20
           renderType: Text.NativeRendering
         }
@@ -282,9 +311,9 @@ Item {
           verticalAlignment: Text.AlignVCenter
           horizontalAlignment: Text.AlignRight
           text: root.label
-          color: Color.foreground
-          font.family: Style.font.family
-          font.pixelSize: Style.font.caption
+          color: root.foreground
+          font.family: root.fontFamily
+          font.pixelSize: root.fontCaption
           font.weight: Font.Medium
           font.letterSpacing: 1.2
           renderType: Text.NativeRendering
