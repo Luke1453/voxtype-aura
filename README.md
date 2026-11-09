@@ -23,7 +23,7 @@ Quickshell config.
 ## Install
 
 ```sh
-git clone -b niri-noctalia https://github.com/Luke1453/voxtype-aura.git
+git clone https://github.com/Luke1453/voxtype-aura.git
 cd voxtype-aura
 ./install.sh
 ```
