@@ -13,10 +13,10 @@ Item {
   readonly property color urgent: "#C25B5B"
   readonly property color background: "#0A0A12"
   readonly property color foreground: "#E4DED2"
-  readonly property int cornerRadius: 12
+  readonly property int cornerRadius: 9
   readonly property int gapsOut: 12
   readonly property string fontFamily: "GoogleSansCode Nerd Font"
-  readonly property int fontCaption: 12
+  readonly property int fontCaption: 10
 
   function alpha(color, value) {
     return Qt.rgba(color.r, color.g, color.b, value)
@@ -83,17 +83,17 @@ Item {
   }
 
   function barHeight(index) {
-    if (state === "success") return 5
+    if (state === "success") return 4
 
     if (state === "recording" && audioSamples.length) {
       var sampleIndex = Math.min(audioSamples.length - 1,
         Math.floor(index * (audioSamples.length - 1) / 7))
-      return 5 + Math.min(1, audioSamples[sampleIndex] * 20) * 16
+      return 4 + Math.min(1, audioSamples[sampleIndex] * 20) * 12
     }
 
     var distance = Math.abs(index - (animationFrame % 15))
     distance = Math.min(distance, 15 - distance)
-    return 5 + Math.max(0, 16 - distance * 5)
+    return 4 + Math.max(0, 12 - distance * 3.75)
   }
 
   Process {
@@ -198,10 +198,10 @@ Item {
 
     screen: root.activeScreen
     visible: root.active && root.activeScreen !== null
-    implicitWidth: 320
-    implicitHeight: 76
-    anchors.top: true
-    margins.top: root.gapsOut
+    implicitWidth: 240
+    implicitHeight: 57
+    anchors.bottom: true
+    margins.bottom: root.gapsOut
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
     mask: Region {}
@@ -213,8 +213,8 @@ Item {
       id: glowSource
 
       visible: false
-      width: 292
-      height: 50
+      width: 219
+      height: 38
       anchors.centerIn: parent
       radius: Math.min(height / 2, root.cornerRadius)
       color: root.stateColor
@@ -233,8 +233,8 @@ Item {
     }
 
     Rectangle {
-      width: 292
-      height: 50
+      width: 219
+      height: 38
       anchors.centerIn: parent
       radius: Math.min(height / 2, root.cornerRadius)
       color: root.alpha(root.background, 0.94)
@@ -247,7 +247,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.leftMargin: parent.radius
         anchors.rightMargin: parent.radius
-        anchors.bottomMargin: 3
+        anchors.bottomMargin: 2
         height: 2
         visible: root.state === "recording" && root.maxDurationSecs > 0
 
@@ -261,29 +261,29 @@ Item {
 
       Row {
         anchors.fill: parent
-        anchors.leftMargin: 18
-        anchors.rightMargin: 18
-        spacing: 18
+        anchors.leftMargin: 13
+        anchors.rightMargin: 13
+        spacing: 13
 
         Text {
-          width: 24
+          width: 18
           height: parent.height
           verticalAlignment: Text.AlignVCenter
           horizontalAlignment: Text.AlignHCenter
           text: root.state === "success" ? "\uf00c" : "\uf130"
           color: root.stateColor
           font.family: root.fontFamily
-          font.pixelSize: 20
+          font.pixelSize: 15
           renderType: Text.NativeRendering
         }
 
         Item {
-          width: 80
+          width: 60
           height: parent.height
 
           Row {
             anchors.centerIn: parent
-            spacing: 5
+            spacing: 4
 
             Repeater {
               model: 8
@@ -291,10 +291,10 @@ Item {
               Rectangle {
                 required property int index
 
-                width: 3
+                width: 2
                 height: root.barHeight(index)
                 anchors.verticalCenter: parent.verticalCenter
-                radius: 1.5
+                radius: 1
                 color: root.stateColor
 
                 Behavior on height {
@@ -306,7 +306,7 @@ Item {
         }
 
         Text {
-          width: 116
+          width: 87
           height: parent.height
           verticalAlignment: Text.AlignVCenter
           horizontalAlignment: Text.AlignRight
@@ -315,7 +315,7 @@ Item {
           font.family: root.fontFamily
           font.pixelSize: root.fontCaption
           font.weight: Font.Medium
-          font.letterSpacing: 1.2
+          font.letterSpacing: 1.0
           renderType: Text.NativeRendering
         }
       }
