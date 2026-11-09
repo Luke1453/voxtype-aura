@@ -14,7 +14,7 @@ Item {
   readonly property color background: "#0A0A12"
   readonly property color foreground: "#E4DED2"
   readonly property int cornerRadius: 9
-  readonly property int gapsOut: 12
+  readonly property int gapsOut: 10
   readonly property string fontFamily: "GoogleSansCode Nerd Font"
   readonly property int fontCaption: 10
 
@@ -83,17 +83,17 @@ Item {
   }
 
   function barHeight(index) {
-    if (state === "success") return 4
+    if (state === "success") return 3.5
 
     if (state === "recording" && audioSamples.length) {
       var sampleIndex = Math.min(audioSamples.length - 1,
         Math.floor(index * (audioSamples.length - 1) / 7))
-      return 4 + Math.min(1, audioSamples[sampleIndex] * 20) * 12
+      return 3.5 + Math.min(1, audioSamples[sampleIndex] * 20) * 11
     }
 
     var distance = Math.abs(index - (animationFrame % 15))
     distance = Math.min(distance, 15 - distance)
-    return 4 + Math.max(0, 12 - distance * 3.75)
+    return 3.5 + Math.max(0, 11 - distance * 3.4)
   }
 
   Process {
@@ -198,8 +198,8 @@ Item {
 
     screen: root.activeScreen
     visible: root.active && root.activeScreen !== null
-    implicitWidth: 240
-    implicitHeight: 57
+    implicitWidth: 225
+    implicitHeight: 50
     anchors.bottom: true
     margins.bottom: root.gapsOut
     color: "transparent"
@@ -213,8 +213,8 @@ Item {
       id: glowSource
 
       visible: false
-      width: 219
-      height: 38
+      width: 205
+      height: 33
       anchors.centerIn: parent
       radius: Math.min(height / 2, root.cornerRadius)
       color: root.stateColor
@@ -233,8 +233,8 @@ Item {
     }
 
     Rectangle {
-      width: 219
-      height: 38
+      width: 205
+      height: 33
       anchors.centerIn: parent
       radius: Math.min(height / 2, root.cornerRadius)
       color: root.alpha(root.background, 0.94)
@@ -261,29 +261,29 @@ Item {
 
       Row {
         anchors.fill: parent
-        anchors.leftMargin: 13
-        anchors.rightMargin: 13
-        spacing: 13
+        anchors.leftMargin: 12
+        anchors.rightMargin: 12
+        spacing: 12
 
         Text {
-          width: 18
+          width: 17
           height: parent.height
           verticalAlignment: Text.AlignVCenter
           horizontalAlignment: Text.AlignHCenter
-          text: root.state === "success" ? "\uf00c" : "\uf130"
+          text: root.state === "success" ? "\uf00c" : root.state === "recording" ? "\uf130" : ""
           color: root.stateColor
           font.family: root.fontFamily
-          font.pixelSize: 15
+          font.pixelSize: 14
           renderType: Text.NativeRendering
         }
 
         Item {
-          width: 60
+          width: 56
           height: parent.height
 
           Row {
             anchors.centerIn: parent
-            spacing: 4
+            spacing: 3
 
             Repeater {
               model: 8
@@ -306,7 +306,7 @@ Item {
         }
 
         Text {
-          width: 87
+          width: 82
           height: parent.height
           verticalAlignment: Text.AlignVCenter
           horizontalAlignment: Text.AlignRight
