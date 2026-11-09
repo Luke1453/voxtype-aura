@@ -12,11 +12,8 @@ Item {
   readonly property color accent: "#BB3535"
   readonly property color urgent: "#C25B5B"
   readonly property color background: "#0A0A12"
-  readonly property color foreground: "#E4DED2"
   readonly property int cornerRadius: 9
-  readonly property int gapsOut: 10
-  readonly property string fontFamily: "GoogleSansCode Nerd Font"
-  readonly property int fontCaption: 10
+  readonly property int gapsOut: 8
 
   function alpha(color, value) {
     return Qt.rgba(color.r, color.g, color.b, value)
@@ -35,8 +32,6 @@ Item {
   readonly property color successColor: Qt.hsla(0.33, Math.max(0.35, accent.hslSaturation), accent.hslLightness, 1)
   readonly property color stateColor: state === "recording" ? urgent
     : state === "success" ? successColor : accent
-  readonly property string label: state === "recording" ? "LISTENING"
-    : state === "success" ? "TRANSCRIBED" : "TRANSCRIBING"
   property string focusedScreenName: ""
   readonly property var activeScreen: {
     for (var i = 0; i < Quickshell.screens.length; i++) {
@@ -83,17 +78,17 @@ Item {
   }
 
   function barHeight(index) {
-    if (state === "success") return 3.5
+    if (state === "success") return 4
 
     if (state === "recording" && audioSamples.length) {
       var sampleIndex = Math.min(audioSamples.length - 1,
-        Math.floor(index * (audioSamples.length - 1) / 7))
-      return 3.5 + Math.min(1, audioSamples[sampleIndex] * 20) * 11
+        Math.floor(index * (audioSamples.length - 1) / 9))
+      return 4 + Math.min(1, audioSamples[sampleIndex] * 20) * 18
     }
 
     var distance = Math.abs(index - (animationFrame % 15))
     distance = Math.min(distance, 15 - distance)
-    return 3.5 + Math.max(0, 11 - distance * 3.4)
+    return 4 + Math.max(0, 18 - distance * 4.5)
   }
 
   Process {
@@ -259,64 +254,32 @@ Item {
         }
       }
 
-      Row {
+      Item {
         anchors.fill: parent
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
-        spacing: 12
+        anchors.leftMargin: 16
+        anchors.rightMargin: 16
 
-        Text {
-          width: 17
-          height: parent.height
-          verticalAlignment: Text.AlignVCenter
-          horizontalAlignment: Text.AlignHCenter
-          text: root.state === "success" ? "\uf00c" : root.state === "recording" ? "\uf130" : ""
-          color: root.stateColor
-          font.family: root.fontFamily
-          font.pixelSize: 14
-          renderType: Text.NativeRendering
-        }
+        Row {
+          anchors.centerIn: parent
+          spacing: 10
 
-        Item {
-          width: 56
-          height: parent.height
+          Repeater {
+            model: 10
 
-          Row {
-            anchors.centerIn: parent
-            spacing: 3
+            Rectangle {
+              required property int index
 
-            Repeater {
-              model: 8
+              width: 4
+              height: root.barHeight(index)
+              anchors.verticalCenter: parent.verticalCenter
+              radius: 2
+              color: root.stateColor
 
-              Rectangle {
-                required property int index
-
-                width: 2
-                height: root.barHeight(index)
-                anchors.verticalCenter: parent.verticalCenter
-                radius: 1
-                color: root.stateColor
-
-                Behavior on height {
-                  NumberAnimation { duration: 85; easing.type: Easing.OutCubic }
-                }
+              Behavior on height {
+                NumberAnimation { duration: 85; easing.type: Easing.OutCubic }
               }
             }
           }
-        }
-
-        Text {
-          width: 82
-          height: parent.height
-          verticalAlignment: Text.AlignVCenter
-          horizontalAlignment: Text.AlignRight
-          text: root.label
-          color: root.foreground
-          font.family: root.fontFamily
-          font.pixelSize: root.fontCaption
-          font.weight: Font.Medium
-          font.letterSpacing: 1.0
-          renderType: Text.NativeRendering
         }
       }
     }
