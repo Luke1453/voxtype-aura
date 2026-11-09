@@ -247,6 +247,7 @@ Item {
         visible: root.state === "recording" && root.maxDurationSecs > 0
 
         Rectangle {
+          anchors.horizontalCenter: parent.horizontalCenter
           width: parent.width * root.recordingProgress
           height: parent.height
           radius: 1
