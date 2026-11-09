@@ -9,8 +9,9 @@ Item {
 
   // Palette for niri + noctalia ("Occult Umbral", dark).
   // Same values as ~/.config/omarchy/current/theme/colors.toml.
-  readonly property color accent: "#BB3535"
-  readonly property color urgent: "#C25B5B"
+  readonly property color recordingColor: "#BB3535"
+  readonly property color transcribingColor: "#E6C27A"
+  readonly property color successColor: "#8BAA82"
   readonly property color background: "#0A0A12"
   readonly property int cornerRadius: 9
   readonly property int gapsOut: 8
@@ -29,9 +30,8 @@ Item {
   readonly property real recordingProgress: maxDurationSecs > 0
     ? Math.max(0, 1 - recordingElapsedSecs / maxDurationSecs) : 0
   readonly property bool active: state === "recording" || state === "transcribing" || state === "success"
-  readonly property color successColor: Qt.hsla(0.33, Math.max(0.35, accent.hslSaturation), accent.hslLightness, 1)
-  readonly property color stateColor: state === "recording" ? urgent
-    : state === "success" ? successColor : accent
+  readonly property color stateColor: state === "recording" ? recordingColor
+    : state === "transcribing" ? transcribingColor : successColor
   property string focusedScreenName: ""
   readonly property var activeScreen: {
     for (var i = 0; i < Quickshell.screens.length; i++) {
@@ -193,7 +193,7 @@ Item {
 
     screen: root.activeScreen
     visible: root.active && root.activeScreen !== null
-    implicitWidth: 225
+    implicitWidth: 150
     implicitHeight: 50
     anchors.bottom: true
     margins.bottom: root.gapsOut
@@ -208,7 +208,7 @@ Item {
       id: glowSource
 
       visible: false
-      width: 205
+      width: 137
       height: 33
       anchors.centerIn: parent
       radius: Math.min(height / 2, root.cornerRadius)
@@ -228,7 +228,7 @@ Item {
     }
 
     Rectangle {
-      width: 205
+      width: 137
       height: 33
       anchors.centerIn: parent
       radius: Math.min(height / 2, root.cornerRadius)
