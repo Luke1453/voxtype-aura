@@ -117,7 +117,9 @@ Item {
     if (state === "recording" && audioSamples.length) {
       var sampleIndex = Math.min(audioSamples.length - 1,
         Math.floor(index * (audioSamples.length - 1) / 15))
-      return 3.5 + Math.min(1, audioSamples[sampleIndex] * 20) * 14
+      var peak = Math.max(0.001, audioSamples[sampleIndex])
+      var level = Math.max(0, Math.min(1, (20 * Math.log10(peak) + 40) / 40))
+      return 3.5 + level * 14
     }
 
     var distance = Math.abs(index - (animationFrame % 15))
