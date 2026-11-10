@@ -51,4 +51,4 @@ if systemctl --user is-active --quiet voxtype.service; then
 fi
 
 echo "installed $unit"
-echo "tune colors and size in $repo_dir/Service.qml, then: systemctl --user restart voxtype-aura"
+echo "palette colors come from noctalia; fallbacks and geometry: $repo_dir/Service.qml"

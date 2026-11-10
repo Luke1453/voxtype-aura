@@ -8,8 +8,8 @@ adapted for **niri + noctalia**. It drops the Omarchy plugin system, the
 `qs.Commons` helpers, and the Hyprland focus API, so it runs as a plain
 Quickshell config.
 
-- recording: palette `error`
-- transcribing: palette `tertiary`
+- recording: palette `primary`
+- transcribing: palette `primary`
 - done: palette `secondary`
 - waveform: gradient `primary` → `tertiary`
 
@@ -30,9 +30,10 @@ cd voxtype-aura
 ```
 
 The script writes `~/.config/systemd/user/voxtype-aura.service`, disables
-voxtype's built-in OSD (`[osd] enabled = false`), and starts both services.
-The unit is generated with the current path, so keep the clone where it is or
-re-run `./install.sh` after moving it.
+voxtype's built-in OSD (`[osd] enabled = false`), and starts Aura. If voxtype
+is already running, it is restarted so the OSD change applies. The unit is
+generated with the current path, so keep the clone where it is or re-run
+`./install.sh` after moving it.
 
 ## How it works
 
@@ -41,7 +42,8 @@ voxtype daemon ──status --follow──> Aura (qs) ──layer-shell──> n
                ──audio.sock──> voxtype-audio-bridge ──NDJSON──> Aura
 ```
 
-State colors follow `stateColor` in `Service.qml`. The overlay queries
+The border, glow and countdown use the current state color; the bars always
+use the palette gradient. The overlay queries
 `niri msg --json focused-output` at startup and whenever voxtype reports a
 state change, then shows on that output. The layer uses an empty input region,
 so clicks pass through.
@@ -74,7 +76,7 @@ render with:
 noctalia msg templates-apply
 ```
 
-The green "done" state is shown for 300 ms, then the overlay hides.
+The done state is shown for 300 ms, then the overlay hides.
 
 ## Tuning
 
