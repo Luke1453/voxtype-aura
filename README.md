@@ -8,9 +8,10 @@ adapted for **niri + noctalia**. It drops the Omarchy plugin system, the
 `qs.Commons` helpers, and the Hyprland focus API, so it runs as a plain
 Quickshell config.
 
-- recording: red `#BB3535`
-- transcribing: yellow `#E6C27A`
-- done: green `#4DD973`
+- recording: palette `error`
+- transcribing: palette `tertiary`
+- done: palette `secondary`
+- waveform: gradient `primary` → `tertiary`
 
 ## Requirements
 
@@ -47,34 +48,46 @@ so clicks pass through.
 
 ## Theming
 
-The card background follows the active noctalia palette. `install.sh` writes
-two files:
+All colors follow the active noctalia palette. `install.sh` writes two files:
 
 - `~/.config/noctalia/voxtype-aura.toml` — user template registration
-- `~/.config/noctalia/templates/voxtype-aura.json` — renders
-  `colors.surface` to `~/.local/state/voxtype-aura/theme.json`
+- `~/.config/noctalia/templates/voxtype-aura.json` — renders the palette to
+  `~/.local/state/voxtype-aura/theme.json`
+
+Role mapping:
+
+| Aura value | Noctalia token |
+|---|---|
+| `background` | `colors.surface` |
+| `recordingColor` | `colors.error` |
+| `transcribingColor` | `colors.tertiary` |
+| `successColor` | `colors.secondary` |
+| `waveStart` | `colors.primary` |
+| `waveEnd` | `colors.tertiary` |
 
 Noctalia re-renders that file on palette changes; Aura watches it with
-`FileView.watchChanges` and updates live. If the file is missing, the fallback
-`#0A0A12` is used. Force a render with:
+`FileView.watchChanges` and updates live, including the waveform gradient.
+If the file is missing, the fallback values in `Service.qml` are used. Force a
+render with:
 
 ```sh
 noctalia msg templates-apply
 ```
 
-The state colors stay fixed by design: red `#BB3535`, yellow `#E6C27A`,
-green `#4DD973`. The green "done" state is shown for 500 ms, then the overlay
-hides.
+The green "done" state is shown for 300 ms, then the overlay hides.
 
 ## Tuning
 
-All visual settings are at the top of `Service.qml`:
+All visual settings are at the top of `Service.qml`. The color properties are
+fallbacks, replaced at runtime by the noctalia palette:
 
-| Property | Current |
+| Property | Fallback |
 |---|---|
 | `recordingColor` | `#BB3535` |
-| `transcribingColor` | `#E6C27A` |
-| `successColor` | `#4DD973` |
+| `transcribingColor` | `#9A7398` |
+| `successColor` | `#8BAA82` |
+| `waveStart` | `#BB3535` |
+| `waveEnd` | `#9A7398` |
 | `background` | `#0A0A12` |
 | `cornerRadius` | `9` |
 | `gapsOut` | `8` |

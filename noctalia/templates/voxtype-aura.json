@@ -1,3 +1,8 @@
 {
-  "background": "{{ colors.surface.default.hex }}"
+  "background": "{{ colors.surface.default.hex }}",
+  "recording": "{{ colors.error.default.hex }}",
+  "transcribing": "{{ colors.tertiary.default.hex }}",
+  "success": "{{ colors.secondary.default.hex }}",
+  "waveStart": "{{ colors.primary.default.hex }}",
+  "waveEnd": "{{ colors.tertiary.default.hex }}"
 }

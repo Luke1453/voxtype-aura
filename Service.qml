@@ -7,11 +7,12 @@ import Quickshell.Wayland
 Item {
   id: root
 
-  // Palette for niri + noctalia ("Occult Umbral", dark).
-  // Same values as ~/.config/omarchy/current/theme/colors.toml.
-  readonly property color recordingColor: "#BB3535"
-  readonly property color transcribingColor: "#E6C27A"
-  readonly property color successColor: "#4DD973"
+  // Fallbacks; overridden live from the noctalia-rendered theme file.
+  property color recordingColor: "#BB3535"
+  property color transcribingColor: "#9A7398"
+  property color successColor: "#8BAA82"
+  property color waveStart: "#BB3535"
+  property color waveEnd: "#9A7398"
   property color background: "#0A0A12"
   readonly property int cornerRadius: 9
   readonly property int gapsOut: 8
@@ -30,6 +31,16 @@ Item {
       var data = JSON.parse(String(raw || "{}"))
       if (typeof data.background === "string" && data.background !== "")
         background = data.background
+      if (typeof data.recording === "string" && data.recording !== "")
+        recordingColor = data.recording
+      if (typeof data.transcribing === "string" && data.transcribing !== "")
+        transcribingColor = data.transcribing
+      if (typeof data.success === "string" && data.success !== "")
+        successColor = data.success
+      if (typeof data.waveStart === "string" && data.waveStart !== "")
+        waveStart = data.waveStart
+      if (typeof data.waveEnd === "string" && data.waveEnd !== "")
+        waveEnd = data.waveEnd
     } catch (error) {
     }
   }
@@ -89,6 +100,15 @@ Item {
       audioSamples = next
     } catch (error) {
     }
+  }
+
+  function barColor(index) {
+    var t = index / 15
+    return Qt.rgba(
+      waveStart.r + (waveEnd.r - waveStart.r) * t,
+      waveStart.g + (waveEnd.g - waveStart.g) * t,
+      waveStart.b + (waveEnd.b - waveStart.b) * t,
+      1)
   }
 
   function barHeight(index) {
@@ -205,7 +225,7 @@ Item {
   }
 
   Timer {
-    interval: 500
+    interval: 300
     running: root.state === "success"
     onTriggered: root.state = "idle"
   }
@@ -296,7 +316,7 @@ Item {
               height: root.barHeight(index)
               anchors.verticalCenter: parent.verticalCenter
               radius: 2
-              color: root.stateColor
+              color: root.barColor(index)
 
               Behavior on height {
                 NumberAnimation { duration: 85; easing.type: Easing.OutCubic }
