@@ -223,6 +223,7 @@ Item {
     interval: 80
     repeat: true
     running: root.state === "transcribing"
+      || (root.state === "recording" && root.audioSamples.length === 0)
     onTriggered: root.animationFrame = (root.animationFrame + 1) % 120
   }
 

@@ -60,7 +60,7 @@ Role mapping:
 |---|---|
 | `background` | `colors.surface` |
 | `recordingColor` | `colors.primary` |
-| `transcribingColor` | `colors.tertiary` |
+| `transcribingColor` | `colors.primary` |
 | `successColor` | `colors.secondary` |
 | `waveStart` | `colors.primary` |
 | `waveEnd` | `colors.tertiary` |
