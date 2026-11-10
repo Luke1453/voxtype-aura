@@ -59,7 +59,7 @@ Role mapping:
 | Aura value | Noctalia token |
 |---|---|
 | `background` | `colors.surface` |
-| `recordingColor` | `colors.error` |
+| `recordingColor` | `colors.primary` |
 | `transcribingColor` | `colors.tertiary` |
 | `successColor` | `colors.secondary` |
 | `waveStart` | `colors.primary` |
