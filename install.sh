@@ -21,6 +21,7 @@ After=graphical-session.target
 
 [Service]
 Type=simple
+Environment="PATH=$PATH"
 ExecStart="$(command -v qs)" -p "$repo_dir"
 Restart=on-failure
 RestartSec=2

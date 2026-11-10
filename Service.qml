@@ -79,7 +79,7 @@ Item {
         }
         if (nextState === "transcribing" && state !== "transcribing") animationFrame = 0
         state = nextState
-      } else if (state === "transcribing") {
+      } else if (state === "transcribing" && nextState === "idle") {
         state = "success"
       } else if (state !== "success") {
         state = "idle"
@@ -154,10 +154,8 @@ Item {
     stdout: SplitParser {
       onRead: function(data) { root.update(data) }
     }
-    onExited: function() {
-      root.state = "idle"
-      statusRetry.restart()
-    }
+    onRunningChanged: if (!running) statusRetry.restart()
+    onExited: root.state = "idle"
   }
 
   Process {
@@ -169,9 +167,7 @@ Item {
       splitMarker: "\n"
       onRead: function(data) { root.updateAudio(data) }
     }
-    onExited: function() {
-      audioRetry.restart()
-    }
+    onRunningChanged: if (!running) audioRetry.restart()
   }
 
   Timer {
