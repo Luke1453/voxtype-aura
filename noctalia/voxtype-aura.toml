@@ -1,0 +1,3 @@
+[theme.templates.user.voxtype_aura]
+input_path = "$XDG_CONFIG_HOME/noctalia/templates/voxtype-aura.json"
+output_path = "$XDG_STATE_HOME/voxtype-aura/theme.json"

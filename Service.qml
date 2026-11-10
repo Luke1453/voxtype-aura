@@ -12,12 +12,26 @@ Item {
   readonly property color recordingColor: "#BB3535"
   readonly property color transcribingColor: "#E6C27A"
   readonly property color successColor: "#4DD973"
-  readonly property color background: "#0A0A12"
+  property color background: "#0A0A12"
   readonly property int cornerRadius: 9
   readonly property int gapsOut: 8
 
+  readonly property string stateHome: {
+    var s = Quickshell.env("XDG_STATE_HOME")
+    return s ? String(s) : String(Quickshell.env("HOME")) + "/.local/state"
+  }
+
   function alpha(color, value) {
     return Qt.rgba(color.r, color.g, color.b, value)
+  }
+
+  function applyTheme(raw) {
+    try {
+      var data = JSON.parse(String(raw || "{}"))
+      if (typeof data.background === "string" && data.background !== "")
+        background = data.background
+    } catch (error) {
+    }
   }
 
   property string state: "idle"
@@ -166,6 +180,14 @@ Item {
     }
   }
 
+  FileView {
+    path: root.stateHome + "/voxtype-aura/theme.json"
+    watchChanges: true
+    onFileChanged: reload()
+    onLoaded: root.applyTheme(text())
+    onTextChanged: root.applyTheme(text())
+  }
+
   Component.onCompleted: niriFocus.running = true
 
   Timer {
@@ -183,7 +205,7 @@ Item {
   }
 
   Timer {
-    interval: 1300
+    interval: 500
     running: root.state === "success"
     onTriggered: root.state = "idle"
   }

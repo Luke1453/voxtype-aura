@@ -45,6 +45,27 @@ State colors follow `stateColor` in `Service.qml`. The overlay queries
 state change, then shows on that output. The layer uses an empty input region,
 so clicks pass through.
 
+## Theming
+
+The card background follows the active noctalia palette. `install.sh` writes
+two files:
+
+- `~/.config/noctalia/voxtype-aura.toml` — user template registration
+- `~/.config/noctalia/templates/voxtype-aura.json` — renders
+  `colors.surface` to `~/.local/state/voxtype-aura/theme.json`
+
+Noctalia re-renders that file on palette changes; Aura watches it with
+`FileView.watchChanges` and updates live. If the file is missing, the fallback
+`#0A0A12` is used. Force a render with:
+
+```sh
+noctalia msg templates-apply
+```
+
+The state colors stay fixed by design: red `#BB3535`, yellow `#E6C27A`,
+green `#4DD973`. The green "done" state is shown for 500 ms, then the overlay
+hides.
+
 ## Tuning
 
 All visual settings are at the top of `Service.qml`:

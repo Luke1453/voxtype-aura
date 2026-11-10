@@ -32,6 +32,16 @@ EOF
 # Aura draws its own overlay; two surfaces would show at once.
 voxtype config set osd.enabled false >/dev/null
 
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+if command -v noctalia >/dev/null 2>&1; then
+  mkdir -p "$config_dir/noctalia/templates"
+  cp "$repo_dir/noctalia/voxtype-aura.toml" "$config_dir/noctalia/voxtype-aura.toml"
+  cp "$repo_dir/noctalia/templates/voxtype-aura.json" "$config_dir/noctalia/templates/voxtype-aura.json"
+  noctalia msg templates-apply >/dev/null 2>&1 || true
+else
+  echo "noctalia not found: background stays on the fallback color" >&2
+fi
+
 systemctl --user daemon-reload
 systemctl --user enable --now voxtype-aura.service
 systemctl --user restart voxtype-aura.service
